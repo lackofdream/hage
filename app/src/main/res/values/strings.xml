@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">战果秃击</string>
+    <string name="title_activity_settings">设置</string>
+
+    <string name="cur_point_w_bonus_desc">当前总战果</string>
+    <string name="select_fired_canon">放过的炮</string>
+</resources>

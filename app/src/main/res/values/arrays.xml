@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="bonus_list">
+        <item>1-5</item>
+        <item>1-6</item>
+        <item>2-5</item>
+        <item>3-5</item>
+        <item>4-5</item>
+        <item>5-5</item>
+        <item>6-5</item>
+        <item>Z炮</item>
+    </string-array>
+</resources>
