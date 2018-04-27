@@ -80,6 +80,11 @@ class MainActivity : AppCompatActivity() {
                 if (expectedPts > 1) df.format(Calculator.get_points_without_bonus_needed_per_day(expectedPts, willFireZ))
                 else "N/A"
         )
+        addRankPiece(babushkaText, "剩余老本", "",
+                if (expectedPts > 1) df.format(
+                        Calculator.get_current_points_without_bonus(currentPts, firedCanons) -
+                                Calculator.get_today_goal_without_bonus(expectedPts, willFireZ))
+                else "N/A")
 
         babushkaText.display()
     }

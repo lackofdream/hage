@@ -4,21 +4,12 @@ import android.annotation.TargetApi
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceActivity
+import android.preference.CheckBoxPreference
 import android.preference.PreferenceFragment
-import android.view.MenuItem
 import android.support.v4.app.NavUtils
+import android.view.MenuItem
 
-/**
- * A [PreferenceActivity] that presents a set of application settings. On
- * handset devices, settings are presented as a single list. On tablets,
- * settings are split by category, with category headers shown to the left of
- * the list of settings.
- *
- * See [Android Design: Settings](http://developer.android.com/design/patterns/settings.html)
- * for design guidelines and the [Settings API Guide](http://developer.android.com/guide/topics/ui/settings.html)
- * for more information on developing a Settings UI.
- */
+
 class SettingsActivity : AppCompatPreferenceActivity() {
     companion object {
         val KEY_CURRENT_POINTS = "CURRENT_POINTS_WITH_BONUS"
@@ -35,9 +26,6 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                 .commit()
     }
 
-    /**
-     * Set up the [android.app.ActionBar], if the API is available.
-     */
     private fun setupActionBar() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
@@ -53,10 +41,6 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         return super.onMenuItemSelected(featureId, item)
     }
 
-    /**
-     * This method stops fragment injection in malicious applications.
-     * Make sure to deny any unknown fragments here.
-     */
     override fun isValidFragment(fragmentName: String): Boolean {
         return PreferenceFragment::class.java.name == fragmentName
                 || HagePreferenceFragment::class.java.name == fragmentName
@@ -78,21 +62,40 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
         override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
             when (key) {
+                KEY_WILL_FIRE_Z -> {
+                    val pref = findPreference(key) as CheckBoxPreference
+                    val sharedPref = sharedPreferences?.getBoolean(key, false) == true
+                    if (pref.isChecked != sharedPref)
+                        pref.isChecked = sharedPref
+                }
                 KEY_CURRENT_POINTS, KEY_EXPECTED_POINTS -> {
                     findPreference(key).summary = String.format("%s", sharedPreferences?.getString(key, ""))
-
                 }
                 KEY_FIRED_CANON -> {
                     findPreference(key).summary = genFiredCanonSummary()
+                    if (firedZ()) {
+                        val editor = sharedPreferences?.edit()
+                        editor?.putBoolean(KEY_WILL_FIRE_Z, true)
+                        editor?.apply()
+                    }
+                    updateLogic()
                 }
-
             }
         }
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.preference)
+            updateLogic()
             initSummary()
+        }
+
+        fun firedZ(): Boolean {
+            return "Z炮" in preferenceScreen.sharedPreferences.getStringSet(KEY_FIRED_CANON, HashSet<String>())
+        }
+
+        fun updateLogic() {
+            findPreference(KEY_WILL_FIRE_Z).isEnabled = !firedZ()
         }
 
         fun genFiredCanonSummary(): String {
