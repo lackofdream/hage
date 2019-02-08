@@ -4,17 +4,17 @@ import android.annotation.TargetApi
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.preference.CheckBoxPreference
 import android.preference.PreferenceFragment
 import android.support.v4.app.NavUtils
 import android.view.MenuItem
+import java.util.*
 
 
 class SettingsActivity : AppCompatPreferenceActivity() {
     companion object {
         val KEY_CURRENT_POINTS = "CURRENT_POINTS_WITH_BONUS"
         val KEY_EXPECTED_POINTS = "EXPECTED_POINTS"
-        val KEY_WILL_FIRE_Z = "WILL_FIRE_Z"
+        val KEY_WILL_FIRE_BONUS = "WILL_FIRE_BONUS"
         val KEY_FIRED_CANON = "FIRED_CANON"
     }
 
@@ -62,23 +62,11 @@ class SettingsActivity : AppCompatPreferenceActivity() {
 
         override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
             when (key) {
-                KEY_WILL_FIRE_Z -> {
-                    val pref = findPreference(key) as CheckBoxPreference
-                    val sharedPref = sharedPreferences?.getBoolean(key, false) == true
-                    if (pref.isChecked != sharedPref)
-                        pref.isChecked = sharedPref
-                }
                 KEY_CURRENT_POINTS, KEY_EXPECTED_POINTS -> {
                     findPreference(key).summary = String.format("%s", sharedPreferences?.getString(key, ""))
                 }
-                KEY_FIRED_CANON -> {
-                    findPreference(key).summary = genFiredCanonSummary()
-                    if (firedZ()) {
-                        val editor = sharedPreferences?.edit()
-                        editor?.putBoolean(KEY_WILL_FIRE_Z, true)
-                        editor?.apply()
-                    }
-                    updateLogic()
+                KEY_FIRED_CANON, KEY_WILL_FIRE_BONUS -> {
+                    updateSummary()
                 }
             }
         }
@@ -86,33 +74,25 @@ class SettingsActivity : AppCompatPreferenceActivity() {
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.preference)
-            updateLogic()
-            initSummary()
+            updateSummary()
         }
 
-        fun firedZ(): Boolean {
-            return "Z炮" in preferenceScreen.sharedPreferences.getStringSet(KEY_FIRED_CANON, HashSet<String>())
-        }
-
-        fun updateLogic() {
-            findPreference(KEY_WILL_FIRE_Z).isEnabled = !firedZ()
-        }
-
-        fun genFiredCanonSummary(): String {
-            val set = preferenceScreen.sharedPreferences.getStringSet(KEY_FIRED_CANON, HashSet<String>())
+        fun getStringSetSummary(key: String, default: String): String {
+            val list = ArrayList<String>(preferenceScreen.sharedPreferences.getStringSet(key, HashSet<String>()))
+            Collections.sort(list)
             val sb = StringBuffer()
-            for (item in set) {
+            for (item in list) {
                 sb.append("${item}, ")
             }
-            if (sb.length == 0) return "都憋着"
+            if (sb.length == 0) return default
             return sb.substring(0, sb.length - 2)
-
         }
 
-        fun initSummary() {
+        fun updateSummary() {
             findPreference(KEY_CURRENT_POINTS).summary = preferenceScreen.sharedPreferences.getString(KEY_CURRENT_POINTS, "")
             findPreference(KEY_EXPECTED_POINTS).summary = preferenceScreen.sharedPreferences.getString(KEY_EXPECTED_POINTS, "")
-            findPreference(KEY_FIRED_CANON).summary = genFiredCanonSummary()
+            findPreference(KEY_FIRED_CANON).summary = getStringSetSummary(KEY_FIRED_CANON, "都憋着")
+            findPreference(KEY_WILL_FIRE_BONUS).summary = getStringSetSummary(KEY_WILL_FIRE_BONUS, "都不打")
         }
     }
 

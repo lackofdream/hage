@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
         val expectedPts = sharedPreferences.getString(SettingsActivity.KEY_EXPECTED_POINTS, "0").toDouble()
-        val willFireZ = sharedPreferences.getBoolean(SettingsActivity.KEY_WILL_FIRE_Z, true)
+        val willFireBonus = sharedPreferences.getStringSet(SettingsActivity.KEY_WILL_FIRE_BONUS, setOf())
         val firedCanons = sharedPreferences.getStringSet(SettingsActivity.KEY_FIRED_CANON, setOf())
         val currentPts = sharedPreferences.getString(SettingsActivity.KEY_CURRENT_POINTS, "0").toDouble()
 
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
 
         babushkaText.reset()
         addRankPiece(babushkaText, "今日计划总战果", "(不包含bonus战果)",
-                if (expectedPts > 1) df.format(Calculator.get_today_goal_without_bonus(expectedPts, willFireZ))
+                if (expectedPts > 1) df.format(Calculator.get_today_goal_without_bonus(expectedPts, willFireBonus))
                 else "N/A"
         )
 
@@ -77,13 +77,13 @@ class MainActivity : AppCompatActivity() {
                 df.format(Calculator.get_current_points_without_bonus(currentPts, firedCanons))
         )
         addRankPiece(babushkaText, "平均每日要肝", "(不包含bonus战果)",
-                if (expectedPts > 1) df.format(Calculator.get_points_without_bonus_needed_per_day(expectedPts, willFireZ))
+                if (expectedPts > 1) df.format(Calculator.get_points_without_bonus_needed_per_day(expectedPts, willFireBonus))
                 else "N/A"
         )
         addRankPiece(babushkaText, "剩余老本", "",
                 if (expectedPts > 1) df.format(
                         Calculator.get_current_points_without_bonus(currentPts, firedCanons) -
-                                Calculator.get_today_goal_without_bonus(expectedPts, willFireZ))
+                                Calculator.get_today_goal_without_bonus(expectedPts, willFireBonus))
                 else "N/A")
 
         babushkaText.display()
