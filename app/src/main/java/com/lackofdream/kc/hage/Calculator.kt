@@ -16,12 +16,15 @@ class Calculator {
                 "5-5" to 200,
                 "6-5" to 250,
                 "Z炮" to 350,
+                "南西炮" to 80,
+                "西方炮" to 330,
+                "Z后炮" to 400,
                 "三川炮" to 200,
                 "泊地炮" to 300
         )
 
         fun get_days_in_month(): Double {
-            return GregorianCalendar().getActualMaximum(Calendar.DAY_OF_MONTH).toDouble()
+            return GregorianCalendar().getActualMaximum(Calendar.DAY_OF_MONTH).toDouble() - 2
         }
 
         fun get_need_points_without_bonus(

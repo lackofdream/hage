@@ -1,12 +1,13 @@
 package com.lackofdream.kc.hage
 
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
+import android.graphics.Color
 import android.os.Bundle
-import android.preference.PreferenceManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.graphics.Color
+import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.PreferenceManager
 import babushkatext.BabushkaText
 import java.text.DecimalFormat
 
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         when (item?.itemId) {
             R.id.settings -> {
                 val intent = Intent(this, SettingsActivity::class.java)
+                Log.i("MAINACT", "starting setting activity intent")
                 startActivity(intent)
                 return true
             }
@@ -58,10 +60,10 @@ class MainActivity : AppCompatActivity() {
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
 
-        val expectedPts = sharedPreferences.getString(SettingsActivity.KEY_EXPECTED_POINTS, "0").toDouble()
+        val expectedPts = sharedPreferences.getString(SettingsActivity.KEY_EXPECTED_POINTS, "0")!!.toDouble()
         val willFireBonus = sharedPreferences.getStringSet(SettingsActivity.KEY_WILL_FIRE_BONUS, setOf())
         val firedCanons = sharedPreferences.getStringSet(SettingsActivity.KEY_FIRED_CANON, setOf())
-        val currentPts = sharedPreferences.getString(SettingsActivity.KEY_CURRENT_POINTS, "0").toDouble()
+        val currentPts = sharedPreferences.getString(SettingsActivity.KEY_CURRENT_POINTS, "0")!!.toDouble()
 
         val babushkaText = findViewById<BabushkaText>(R.id.pts_per_day)
 
@@ -69,21 +71,21 @@ class MainActivity : AppCompatActivity() {
 
         babushkaText.reset()
         addRankPiece(babushkaText, "今日计划总战果", "(不包含bonus战果)",
-                if (expectedPts > 1) df.format(Calculator.get_today_goal_without_bonus(expectedPts, willFireBonus))
+                if (expectedPts > 1) df.format(Calculator.get_today_goal_without_bonus(expectedPts, willFireBonus!!))
                 else "N/A"
         )
 
         addRankPiece(babushkaText, "今日实际总战果", "(不包含bonus战果)",
-                df.format(Calculator.get_current_points_without_bonus(currentPts, firedCanons))
+                df.format(Calculator.get_current_points_without_bonus(currentPts, firedCanons!!))
         )
         addRankPiece(babushkaText, "平均每日要肝", "(不包含bonus战果)",
-                if (expectedPts > 1) df.format(Calculator.get_points_without_bonus_needed_per_day(expectedPts, willFireBonus))
+                if (expectedPts > 1) df.format(Calculator.get_points_without_bonus_needed_per_day(expectedPts, willFireBonus!!))
                 else "N/A"
         )
         addRankPiece(babushkaText, "剩余老本", "",
                 if (expectedPts > 1) df.format(
                         Calculator.get_current_points_without_bonus(currentPts, firedCanons) -
-                                Calculator.get_today_goal_without_bonus(expectedPts, willFireBonus))
+                                Calculator.get_today_goal_without_bonus(expectedPts, willFireBonus!!))
                 else "N/A")
 
         babushkaText.display()
