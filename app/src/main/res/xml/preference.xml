@@ -25,7 +25,7 @@
         android:entryValues="@array/bonus_list"
         android:key="WILL_FIRE_BONUS"
         android:summary="准备放的炮"
-        android:title="@string/select_fired_canon" />
+        android:title="准备放的炮" />
     <MultiSelectListPreference
         android:dialogTitle="@string/select_fired_canon"
         android:entries="@array/bonus_list"
