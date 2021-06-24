@@ -20,7 +20,8 @@ class Calculator {
                 "西方炮" to 330,
                 "Z后炮" to 400,
                 "三川炮" to 200,
-                "泊地炮" to 300
+                "泊地炮" to 300,
+                "六水戦炮" to 390
         )
 
         fun get_days_in_month(): Double {
